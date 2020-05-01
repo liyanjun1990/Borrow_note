@@ -1,0 +1,38 @@
+import numpy as np
+import datetime as dt
+
+def tax_year(year,month):
+    if month <= 6:
+        taxyear = year
+    else:
+        taxyear = year + 1
+    return taxyear
+
+
+def borowing_schdule(borrowing_exp,year,syear,smonth,sday):
+    start_point = dt.datetime(syear, smonth, sday)
+    if year >5:
+        year = 5
+    else:
+        pass
+    dayofyear = [0] * (year+1)
+    year_text = []
+    for i in range(0,year+1):
+        if i == 0:
+            dayofyear[i] = (dt.datetime(tax_year(syear,smonth),6,30) - start_point).days + 1
+            year_text.append('Year' + str(i+1) + ' - ' + str(syear+i))
+        elif i == year:
+            dayofyear[i] = (dt.datetime(syear+i,smonth,sday) - dt.datetime(tax_year(syear+i,smonth)-1, 7, 1) ).days
+            year_text.append('Year' + str(i+1) + ' - ' + str(syear+i))
+        else:
+            dayofyear[i] = (dt.datetime(syear+i,6,30) - dt.datetime(syear+i-1,7,1)).days + 1
+            year_text.append('Year' + str(i+1) + ' - ' + str(syear+i))
+
+    dayofyear = np.array(dayofyear)
+    daytotal = sum(dayofyear)
+    percentage = dayofyear/daytotal
+    deduction = np.around(percentage * borrowing_exp,decimals=0).astype(int)
+    print('Borrowing Expenses Total = ' + str(borrowing_exp))
+    for i in range(0,len(dayofyear)):
+        print(year_text[i]+'\t'+ str(dayofyear[i])+'\t days \t $' + str(deduction[i]) + '\tCalc: '
+              + str(borrowing_exp) +' x ' + str(dayofyear[i]) + '/' + str(daytotal))
